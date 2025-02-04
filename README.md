@@ -1,8 +1,6 @@
-# Career Mode Filter
+# 🔹Career Mode Filter🔹 
 
-Mobile Application for filtering players and see their information to utilize in career modes in football games.
-
-## Getting Started
+Mobile Application for filtering players and see their information to utilize in career modes in football games ⚽
 
 ### Features:
 - Searching and filtering players according to their overalls, potentials, values, ages and positions.
@@ -15,8 +13,8 @@ Mobile Application for filtering players and see their information to utilize in
 This project is a starting point for a Flutter application.
 
 ### Key Concepts:
-- Dart
-- Flutter
-- Object Oriented Proggramming
+- Dart 🎯
+- Flutter 💻 
+- Object Oriented Proggramming 📋
   
-Thanks for visiting.
+Thanks for visiting 🚀
