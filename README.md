@@ -16,5 +16,7 @@ This project is a starting point for a Flutter application.
 - Dart 🎯
 - Flutter 💻 
 - Object Oriented Proggramming 📋
-  
+
+
+New features will be added soon ⏳
 Thanks for visiting 🚀
