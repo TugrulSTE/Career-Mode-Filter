@@ -1,6 +1,7 @@
 # 🔹Career Mode Filter🔹 
 
 Mobile Application to filter players and see their information to utilize in career modes in football games ⚽
+**▪️Avaliable For Android▪️**
 
 ### Features:
 - Searching and filtering players according to their overalls, potentials, values, ages and positions 📂
