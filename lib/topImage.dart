@@ -12,8 +12,7 @@ class topImage extends StatelessWidget{
     (
       color: const Color.fromARGB(255, 0, 0, 0),
       image: DecorationImage(
-        image: AssetImage(
-            "lib/assets/images/magenta-abstract-3840x2160-18139.png"),
+        image: AssetImage(),
         fit: BoxFit.fill,
       ),
     )
