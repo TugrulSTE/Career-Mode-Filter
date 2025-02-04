@@ -10,9 +10,9 @@ Mobile Application for filtering players and see their information to utilize in
 - Light/Dark theme (Coming soon) ☀️🌙
 - Basic and user-friendly interface 📱
 
-This project is a starting point for a Flutter application.
 
 ### Key Concepts:
+This project is a starting point for a Flutter application.
 - Dart 🎯
 - Flutter 💻 
 - Object Oriented Proggramming 📋
