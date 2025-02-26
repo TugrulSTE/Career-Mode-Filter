@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class topImage extends StatelessWidget{
+  const topImage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -12,7 +14,8 @@ class topImage extends StatelessWidget{
     (
       color: const Color.fromARGB(255, 0, 0, 0),
       image: DecorationImage(
-        image: AssetImage(),
+        image: AssetImage(
+            "lib/assets/images/abstract_blue.jpg"),
         fit: BoxFit.fill,
       ),
     )

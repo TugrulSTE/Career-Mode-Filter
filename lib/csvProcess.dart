@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:careerfilter/databaseHelper.dart';
+import 'package:careerfilter/favoriteService.dart';
 import 'package:careerfilter/player.dart';
 import 'package:careerfilter/topImage.dart';
 import 'package:csv/csv.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'positions.dart';
 import 'package:intl/intl.dart';
 
+// ignore: must_be_immutable
 class CsvExample extends StatefulWidget {
   int minvalue;
   int maxvalue;
@@ -17,6 +20,7 @@ class CsvExample extends StatefulWidget {
   List<String> position;
   int minage;
   int maxage;
+  String name;
   final game;
 
   CsvExample(
@@ -32,6 +36,7 @@ class CsvExample extends StatefulWidget {
     required this.position,
     required this.minvalue,
     required this.maxvalue,
+    required this.name,
   });
   @override
   _CsvExampleState createState() => _CsvExampleState();
@@ -39,13 +44,19 @@ class CsvExample extends StatefulWidget {
 
 class _CsvExampleState extends State<CsvExample> {
   List<Map<String, dynamic>> data = []; // CSV verileri burada saklanacak.
-  List<Player> favorite_player = [];
   List<Player> filteredData = [];
+  List<Player> favorite_player = [];
 
   @override
   void initState() {
     super.initState();
     loadCsvData();
+  }
+
+  Future<void> _addToFavorites(Player player) async {
+    await Favoriteservice().addFavorite(player);
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("${player.name} favorilere eklendi!")));
   }
 
   // CSV dosyasını okuma ve verileri işleme
@@ -92,25 +103,22 @@ class _CsvExampleState extends State<CsvExample> {
       print(rows[4]);
       // Sadece belirli sütunları seçmek (örneğin Name ve Age)
       setState(() {
-        int i = 0;
         for (var row in rows) {
           int age = int.tryParse(row["age"]?.toString() ?? '0') ?? 0;
           int overall = int.tryParse(row["overall"]?.toString() ?? '0') ?? 0;
           int potential =
               int.tryParse(row["potential"]?.toString() ?? '0') ?? 0;
-          double value = (row["value_eur"]);
+          String plname = row["short_name"];
+          double value = row["value_eur"] is double
+              ? row["value_eur"]
+              : double.tryParse(row["value_eur"].toString()) ?? 0;
           Player x = Player(
-              name: row["short_name"],
+              name: row["short_name"].toString(),
               age: age,
               potential: potential,
               overall: overall,
               value: value,
               club: row["club_name"]);
-          if (i < 4) {
-            print(row["player_positions"]);
-            print(row["player_positions"].runtimeType);
-          }
-          i++;
 
           if (age < widget.maxage &&
               value < widget.maxvalue &&
@@ -119,7 +127,8 @@ class _CsvExampleState extends State<CsvExample> {
               overall < widget.maxoverall &&
               overall > widget.minoverall &&
               potential < widget.maxpotential &&
-              potential > widget.minpotential) {
+              potential > widget.minpotential &&
+              plname.contains(widget.name == "" ? "" : widget.name)) {
             if (widget.position.isEmpty) {
               filteredData.add(x);
             } else {
@@ -138,7 +147,6 @@ class _CsvExampleState extends State<CsvExample> {
         }
 
         // Filtrelenmiş veriyi `data` değişkenine atıyoruz.
-        ;
       });
     } catch (e) {
       print("Error reading CSV: $e");
@@ -179,7 +187,7 @@ class _CsvExampleState extends State<CsvExample> {
                                 end: Alignment.bottomRight,
                                 colors: [
                                   Color.fromARGB(255, 252, 252, 252),
-                                  Color.fromARGB(250, 138, 23, 66),
+                                  Color.fromARGB(255, 51, 34, 164),
                                 ],
                               ),
                               borderRadius: BorderRadius.only(
@@ -234,26 +242,41 @@ class _CsvExampleState extends State<CsvExample> {
                                       Expanded(
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.end,
                                           children: [
                                             Text(
                                               "Value: ${NumberFormat('#,##0', 'tr_TR').format(row.value)} €",
                                               style: TextStyle(fontSize: 18),
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 25),
-                                              child: FloatingActionButton(
-                                                heroTag: null,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    favorite_player.add(row);
-                                                  });
-                                                },
-                                                backgroundColor: Colors.white,
-                                                mini: true,
-                                              ),
-                                            )
+                                            FloatingActionButton(
+                                              heroTag: null,
+                                              onPressed: () {
+                                                favorite_player.add(row);
+                                                print(
+                                                    favorite_player.toString());
+                                                _addToFavorites(row);
+                                              },
+                                              backgroundColor: Colors.white,
+                                              mini: true,
+                                              child: Icon(Icons.favorite),
+                                            ),
+                                            FloatingActionButton(
+                                              heroTag: null,
+                                              onPressed: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: Text(row.name),
+                                                        content: Text(row.club),
+                                                      );
+                                                    });
+                                              },
+                                              backgroundColor: Colors.white,
+                                              mini: true,
+                                              child: Icon(Icons.info),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -284,7 +307,7 @@ class _CsvExampleState extends State<CsvExample> {
                       Container(
                           padding: EdgeInsets.all(7),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(118, 138, 23, 65),
+                            color: Color.fromARGB(255, 94, 90, 192),
                             borderRadius: BorderRadius.all(Radius.circular(7)),
                           ),
                           child: Text("Page ${currentPage + 1} / $totalPages")),

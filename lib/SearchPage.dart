@@ -1,7 +1,10 @@
+import 'package:careerfilter/FavoritePage.dart';
+import 'package:careerfilter/player.dart';
 import 'package:careerfilter/topImage.dart';
 import 'package:flutter/material.dart';
 import 'csvProcess.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   String game1;
   SearchPage({required this.game1, super.key});
@@ -20,7 +23,8 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController valueMinController = TextEditingController();
   final TextEditingController valueMaxController = TextEditingController();
   final TextEditingController club = TextEditingController();
-  List<String> positions = [
+  final TextEditingController name = TextEditingController();
+  final List<String> positions = [
     "GK",
     "LB",
     "LWB",
@@ -38,56 +42,55 @@ class _SearchPageState extends State<SearchPage> {
     "CF"
   ];
   List<String> selectedPositions = [];
-
   void showMultiSelectDialog() {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text("Select Positions"),
-          content: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6,
-              // Maksimum yükseklik
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize:
-                    MainAxisSize.min, // Sadece içeriğin boyutunu kullan
-                children: positions
-                    .map(
-                      (position) => CheckboxListTile(
-                        title: Text(position),
-                        value: selectedPositions.contains(position),
-                        onChanged: (bool? isSelected) {
-                          setState(() {
-                            if (isSelected == true) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text("Select Positions"),
+            content: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+                // Maksimum yükseklik
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize:
+                      MainAxisSize.min, // Sadece içeriğin boyutunu kullan
+                  children: positions
+                      .map(
+                        (position) => CheckboxListTile(
+                          title: Text(position),
+                          value: selectedPositions.contains(position),
+                          onChanged: (bool? isSelected) {
+                            setState(() {
                               if (!selectedPositions.contains(position)) {
                                 // Pozisyon listede yoksa ekle
                                 selectedPositions.add(position);
+                              } else {
+                                // Pozisyon listeden çıkar
+                                selectedPositions.remove(position);
                               }
-                            } else {
-                              // Pozisyon listeden çıkar
-                              selectedPositions.remove(position);
-                            }
+                            });
                             print(selectedPositions);
-                          });
-                        },
-                      ),
-                    )
-                    .toList(),
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Modal kapatılır.
-              },
-              child: Text("Done"),
-            ),
-          ],
-        );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Modal kapatılır.
+                },
+                child: Text("Done"),
+              ),
+            ],
+          );
+        });
       },
     );
   }
@@ -110,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
                   'FILTER TO SEARCH',
                   style: TextStyle(
                     fontSize: 23,
-                    color: const Color.fromARGB(255, 114, 10, 48),
+                    color: const Color.fromARGB(255, 33, 15, 150),
                   ),
                 ),
               ),
@@ -123,7 +126,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 114, 10, 48),
+                      color: Color.fromARGB(255, 33, 15, 150),
                       borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(20),
                           topRight: Radius.circular(20)),
@@ -149,21 +152,12 @@ class _SearchPageState extends State<SearchPage> {
                 child: ListView(
                   padding: EdgeInsets.all(16),
                   children: [
-                    // Overall Min-Max
-                    /*
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TextField(
-                        controller: club,
-                        decoration: InputDecoration(
-                          labelText: "Club:",
-                          border: UnderlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.text,
-                      ),
+                    SizedBox(height: 5),
+                    Column(
+                      children: [
+                        buildNameField("Name", name),
+                      ],
                     ),
-                    */
-                    SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
@@ -226,47 +220,68 @@ class _SearchPageState extends State<SearchPage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 30.0),
-                child: FloatingActionButton(
-                  heroTag: null,
-                  onPressed: () {
-                    final minAge = int.tryParse(ageMinController.text) ?? 16;
-                    final maxAge = int.tryParse(ageMaxController.text) ?? 50;
-                    final minVal = int.tryParse(valueMinController.text) ?? 0;
-                    final maxVal =
-                        int.tryParse(valueMaxController.text) ?? 1000000000;
-                    final ovrMax =
-                        int.tryParse(overallMaxController.text) ?? 99;
-                    final ovrMin =
-                        int.tryParse(overallMinController.text) ?? 40;
-                    final potMax =
-                        int.tryParse(potentialMaxController.text) ?? 99;
-                    final potMin =
-                        int.tryParse(potentialMinController.text) ?? 40;
-                    final pos = selectedPositions;
-                    print(potMax);
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FloatingActionButton(
+                      heroTag: null,
+                      onPressed: () {
+                        final minAge =
+                            int.tryParse(ageMinController.text) ?? 16;
+                        final maxAge =
+                            int.tryParse(ageMaxController.text) ?? 50;
+                        final minVal =
+                            int.tryParse(valueMinController.text) ?? 0;
+                        final maxVal =
+                            int.tryParse(valueMaxController.text) ?? 1000000000;
+                        final ovrMax =
+                            int.tryParse(overallMaxController.text) ?? 99;
+                        final ovrMin =
+                            int.tryParse(overallMinController.text) ?? 40;
+                        final potMax =
+                            int.tryParse(potentialMaxController.text) ?? 99;
+                        final potMin =
+                            int.tryParse(potentialMinController.text) ?? 40;
+                        final pos = selectedPositions;
+                        ;
+                        print(potMax);
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CsvExample(
-                            [],
-                              game: widget.game1,
-                              minage: minAge,
-                              maxage: maxAge,
-                              maxoverall: ovrMax,
-                              minoverall: ovrMin,
-                              maxpotential: potMax,
-                              minpotential: potMin,
-                              maxvalue: maxVal,
-                              minvalue: minVal,
-                              position: pos)),
-                    );
-                  },
-                  backgroundColor: const Color.fromARGB(255, 114, 10, 48),
-                  child: Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CsvExample([],
+                                  game: widget.game1,
+                                  minage: minAge,
+                                  maxage: maxAge,
+                                  maxoverall: ovrMax,
+                                  minoverall: ovrMin,
+                                  maxpotential: potMax,
+                                  minpotential: potMin,
+                                  maxvalue: maxVal,
+                                  minvalue: minVal,
+                                  name: name.text,
+                                  position: pos,
+                                  )),
+                        );
+                      },
+                      backgroundColor: const Color.fromARGB(255, 33, 15, 150),
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    FloatingActionButton(
+                      onPressed: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Favoritepage()))
+
+                      },
+                      child: Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
                 ),
               )
             ],
@@ -287,6 +302,20 @@ class _SearchPageState extends State<SearchPage> {
           border: UnderlineInputBorder(),
         ),
         keyboardType: TextInputType.number,
+      ),
+    );
+  }
+
+  Widget buildNameField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: UnderlineInputBorder(),
+        ),
+        keyboardType: TextInputType.name,
       ),
     );
   }

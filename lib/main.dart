@@ -1,7 +1,9 @@
 import 'package:careerfilter/topImage.dart';
 import 'package:flutter/material.dart';
 import 'GameButton.dart';
+import 'package:sqflite/sqflite.dart';
 void main() {
+  
   runApp(const MyApp());
 }
 
@@ -14,7 +16,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Career Filter',
       theme: ThemeData(
-       
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -26,7 +42,15 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
   final String title;
 
   @override
@@ -35,6 +59,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      
       home: SafeArea(
+        
         child: Scaffold(
           body: Column(
             children: [
@@ -60,16 +88,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   'SELECT A GAME',
                   style: TextStyle(
                       fontSize: 23,
-                      color: const Color.fromARGB(255, 114, 10, 48)),
+                      color: const Color.fromARGB(255, 33, 15, 150)),
                 ),
               ),
               Expanded(
                   child: ListView(
                 children: [
                   GameButton(gamename: "FIFA 22"),
-                  GameButton(gamename: "FIFA 18"),
+                  GameButton(gamename: "FIFA 18 (Soon)"),
                   
-                  GameButton(gamename: "FIFA 16")
+                  GameButton(gamename: "FIFA 16 (Soon)")
                 ],
               )),
             
@@ -80,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
     decoration: BoxDecoration(
       image: DecorationImage(
                       image: AssetImage(
-                          "lib/assets/images/magenta-abstract-3840x2160-18139.png"),
+                          "lib/assets/images/abstract_blue.jpg"),
                       fit: BoxFit.cover),
     ),
     height: 50,
@@ -94,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+
 
   }
 }

@@ -5,7 +5,7 @@ class GameButton extends StatelessWidget {
   final String
       gamename; // Why does the constructor throw error when I don't add final keyword?
 
-  const GameButton({required this.gamename});
+  const GameButton({super.key, required this.gamename});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -13,7 +13,7 @@ class GameButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 30, right: 55),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 114, 10, 48),
+          color: const Color.fromARGB(255, 33, 15, 150),
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
         ),
