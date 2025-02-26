@@ -23,3 +23,8 @@ This project is a starting point for a Flutter application.
 New features will be added soon ⏳
 
 Thanks for visiting 🚀
+
+#### Update Notes:
+1.1
+- SQflite is used to save favorite players 📁
+- Color theme changed to blue 🟦
