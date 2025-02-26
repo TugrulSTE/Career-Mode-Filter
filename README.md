@@ -28,3 +28,8 @@ Thanks for visiting 🚀
 1.1
 - SQflite is used to save favorite players 📁
 - Color theme changed to blue 🟦
+
+#### Images:
+
+![image](https://github.com/user-attachments/assets/78cf014f-d890-44d3-bdb9-077522f5b03b)
+
