@@ -32,4 +32,5 @@ Thanks for visiting 🚀
 #### Images:
 
 ![image](https://github.com/user-attachments/assets/78cf014f-d890-44d3-bdb9-077522f5b03b)
+![Ekran görüntüsü 2025-02-26 223545](https://github.com/user-attachments/assets/67232e97-5681-4274-923a-63b514925675)
 
