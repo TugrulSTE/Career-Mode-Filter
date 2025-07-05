@@ -1,10 +1,15 @@
+import 'package:careerfilter/search_view_model.dart';
+import 'package:careerfilter/skillPage.dart';
 import 'package:careerfilter/topImage.dart';
 import 'package:flutter/material.dart';
 import 'GameButton.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
 void main() {
   
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (_) => SearchViewModel(), // ViewModel bağlandı
+      child: const MyApp(),
+    ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -95,9 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ListView(
                 children: [
                   GameButton(gamename: "FIFA 22"),
-                  GameButton(gamename: "FIFA 18 (Soon)"),
-                  
-                  GameButton(gamename: "FIFA 16 (Soon)")
+               
+                  SizedBox(height: 10,),
                 ],
               )),
             

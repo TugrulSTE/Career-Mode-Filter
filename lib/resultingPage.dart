@@ -1,55 +1,30 @@
-import 'package:careerfilter/favoriteService.dart';
-import 'package:careerfilter/player.dart';
-import 'package:careerfilter/topImage.dart';
+import 'package:careerfilter/CsvViewModel.dart';
+import 'package:careerfilter/skillPage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'player.dart';
+import 'topImage.dart';
 import 'package:intl/intl.dart';
 
-class Favoritepage extends StatefulWidget {
-  Favoritepage({super.key});
-
-  @override
-  _FavoritepageState createState() => _FavoritepageState();
-}
-
-class _FavoritepageState extends State<Favoritepage> {
-  int itemsPerPage = 10;
-  int currentPage = 0;
-  List<Player> favorites = [];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _loadFavorites();
-  }
-
-  Future<void> _loadFavorites() async {
-    final favs = await Favoriteservice().getFavorites();
-    setState(() {
-      favorites = favs;
-    });
-  }
+class CsvExample extends StatelessWidget {
+  const CsvExample({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    int totalPages = (favorites.length / itemsPerPage).ceil();
-
-    // Sayfadaki veriyi al
-    List<Player> currentItems =
-        favorites.skip(currentPage * itemsPerPage).take(itemsPerPage).toList();
+    final vm = Provider.of<CsvViewModel>(context);
 
     return SafeArea(
       child: Scaffold(
-        body: favorites.isEmpty
+        body: vm.isLoading
             ? Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   topImage(),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: currentItems.length,
+                      itemCount: vm.currentItems.length,
                       itemBuilder: (context, index) {
-                        final row = currentItems[index];
+                        Player row = vm.currentItems[index];
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
@@ -60,7 +35,7 @@ class _FavoritepageState extends State<Favoritepage> {
                                 end: Alignment.bottomRight,
                                 colors: [
                                   Color.fromARGB(255, 252, 252, 252),
-                                  Color.fromARGB(248, 83, 83, 83),
+                                  Color.fromARGB(255, 51, 34, 164),
                                 ],
                               ),
                               borderRadius: BorderRadius.only(
@@ -75,10 +50,8 @@ class _FavoritepageState extends State<Favoritepage> {
                                   padding: const EdgeInsets.all(9.0),
                                   child: Image.asset(
                                     'lib/assets/images/unknown.png',
-                                    width: MediaQuery.of(context).size.width *
-                                        0.08,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.1,
+                                    width: MediaQuery.of(context).size.width * 0.08,
+                                    height: MediaQuery.of(context).size.height * 0.1,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -86,8 +59,7 @@ class _FavoritepageState extends State<Favoritepage> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         row.name,
@@ -124,37 +96,51 @@ class _FavoritepageState extends State<Favoritepage> {
                                             FloatingActionButton(
                                               heroTag: null,
                                               onPressed: () {
+                                                vm.addToFavorites(row);
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text("${row.name} favorilere eklendi!"),
+                                                  ),
+                                                );
+                                              },
+                                              backgroundColor: Colors.white,
+                                              mini: true,
+                                              child: Icon(Icons.favorite),
+                                            ),
+                                            FloatingActionButton(
+                                              heroTag: null,
+                                              
+                                              onPressed: () {
                                                 showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text(row.name),
-                                                        content: Text(row.club),
-                                                      );
-                                                    });
+                                                  context: context,
+                                                  builder: (context) => AlertDialog(
+                                                    title: Text(row.name),
+                                                    content: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text("Club: " +row.club, textAlign: TextAlign.left,),
+                                                        SizedBox(height: 3,),
+                                                        Row(children: [
+                                                          Text("Skills: "),
+                                                          ...List.generate(row.skills, 
+                                                        (index) => Icon(Icons.star)),
+                                                        ],),
+                                                        SizedBox(height: 2,),
+                                                        Align(
+                                                          alignment: Alignment.centerLeft,
+                                                          child: TextButton(
+                                                            onPressed: () => {Navigator.push(context, MaterialPageRoute(builder: (context) => SkillPage(),))}, child: Text("Learn more about skill moves"),),
+                                                        )
+                                                        ,
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
                                               },
                                               backgroundColor: Colors.white,
                                               mini: true,
                                               child: Icon(Icons.info),
-                                            ),
-                                            FloatingActionButton(
-                                              heroTag: null,
-                                              onPressed: () {
-                                                setState(() {
-                                                  Favoriteservice()
-                                                      .removeFavorite(row);
-                                                  if (favorites.length == 1) {
-                                                    favorites.remove(row);
-                                                    Navigator.pop(context);
-                                                  } else {
-                                                    favorites.remove(row);
-                                                  }
-                                                });
-                                              },
-                                              backgroundColor: Colors.white,
-                                              mini: true,
-                                              child: Icon(Icons.do_disturb_alt),
                                             ),
                                           ],
                                         ),
@@ -174,29 +160,21 @@ class _FavoritepageState extends State<Favoritepage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: currentPage > 0
-                            ? () {
-                                setState(() {
-                                  currentPage--;
-                                });
-                              }
-                            : null,
+                        onPressed: vm.currentPage > 0 ? vm.prevPage : null,
                         icon: Icon(Icons.arrow_back),
                       ),
                       Container(
-                          padding: EdgeInsets.all(7),
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 130, 129, 129),
-                            borderRadius: BorderRadius.all(Radius.circular(7)),
-                          ),
-                          child: Text("Page ${currentPage + 1} / $totalPages")),
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 94, 90, 192),
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                        ),
+                        child: Text("Sayfa: ${vm.currentPage + 1} / ${vm.totalPages}",
+                            style: TextStyle(fontSize: 18, color: Colors.white)),
+                      ),
                       IconButton(
-                        onPressed: currentPage < totalPages - 1
-                            ? () {
-                                setState(() {
-                                  currentPage++;
-                                });
-                              }
+                        onPressed: vm.currentPage < vm.totalPages - 1
+                            ? vm.nextPage
                             : null,
                         icon: Icon(Icons.arrow_forward),
                       ),

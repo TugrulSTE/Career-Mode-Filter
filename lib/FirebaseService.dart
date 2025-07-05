@@ -17,7 +17,8 @@ class FirebaseService {
               potential: value["potential"],
               overall: value["overall"],
               value: value["value"],
-              club: value["club"]);
+              club: value["club"],
+              skills: value['skills'],);
         players.add(p);
         });
         return players;

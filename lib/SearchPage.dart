@@ -1,8 +1,11 @@
+import 'package:careerfilter/CsvViewModel.dart';
 import 'package:careerfilter/FavoritePage.dart';
-import 'package:careerfilter/player.dart';
+import 'package:careerfilter/resultingPage.dart';
+import 'package:careerfilter/search_view_model.dart';
 import 'package:careerfilter/topImage.dart';
 import 'package:flutter/material.dart';
-import 'csvProcess.dart';
+
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
@@ -93,199 +96,202 @@ class _SearchPageState extends State<SearchPage> {
         });
       },
     );
+
+    /*
+     map takes the items in the list as an argument and returns a Chechbox and put a sign to show current position is selected.
+    */
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [
-              // Üst kısım (Mavi bölüm)
-              topImage(),
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          children: [
+            // Üst kısım (Mavi bölüm)
+            topImage(),
 
-              // Başlık
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  'FILTER TO SEARCH',
-                  style: TextStyle(
-                    fontSize: 23,
-                    color: const Color.fromARGB(255, 33, 15, 150),
+            // Başlık
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                'FILTER TO SEARCH',
+                style: TextStyle(
+                  fontSize: 23,
+                  color: const Color.fromARGB(255, 33, 15, 150),
+                ),
+              ),
+            ),
+
+            // Select Position Butonu
+            Padding(
+              padding: const EdgeInsets.only(right: 95.0),
+              child: GestureDetector(
+                onTap: showMultiSelectDialog,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 33, 15, 150),
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Select Position",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: Colors.white),
+                    ],
                   ),
                 ),
               ),
+            ),
 
-              // Select Position Butonu
-              Padding(
-                padding: const EdgeInsets.only(right: 95.0),
-                child: GestureDetector(
-                  onTap: showMultiSelectDialog,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 33, 15, 150),
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Select Position",
-                          style: TextStyle(color: Colors.white),
+            SizedBox(height: 16),
+
+            // Diğer filtreleme alanları
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(16),
+                children: [
+                  SizedBox(height: 5),
+                  Column(
+                    children: [
+                      buildNameField("Name"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: buildFilterField(
+                              "Overall Min", overallMinController)),
+                      SizedBox(width: 9),
+                      Expanded(
+                          child: buildFilterField(
+                              "Overall Max", overallMaxController)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // Potential Min-Max
+                  Row(
+                    children: [
+                      Expanded(
+                          child: buildFilterField(
+                              "Potential Min", potentialMinController)),
+                      SizedBox(width: 9),
+                      Expanded(
+                          child: buildFilterField(
+                              "Potential Max", potentialMaxController)),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // Age Min-Max
+                  Row(
+                    children: [
+                      Expanded(
+                          child: buildFilterField("Age Min", ageMinController)),
+                      SizedBox(width: 9),
+                      Expanded(
+                          child: buildFilterField("Age Max", ageMaxController)),
+                    ],
+                  ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // Value Min-Max
+                  Row(
+                    children: [
+                      Expanded(
+                          child: buildFilterField(
+                              "Value Min", valueMinController)),
+                      SizedBox(width: 9),
+                      Expanded(
+                          child: buildFilterField(
+                              "Value Max", valueMaxController)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () {
+                      final minAge = int.tryParse(ageMinController.text) ?? 16;
+                      final maxAge = int.tryParse(ageMaxController.text) ?? 50;
+                      final minVal = int.tryParse(valueMinController.text) ?? 0;
+                      final maxVal =
+                          int.tryParse(valueMaxController.text) ?? 1000000000;
+                      final ovrMax =
+                          int.tryParse(overallMaxController.text) ?? 99;
+                      final ovrMin =
+                          int.tryParse(overallMinController.text) ?? 40;
+                      final potMax =
+                          int.tryParse(potentialMaxController.text) ?? 99;
+                      final potMin =
+                          int.tryParse(potentialMinController.text) ?? 40;
+                      final pos = selectedPositions;
+                      ;
+                      final name = context.read<SearchViewModel>().name;
+                      print(potMax);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (_) => CsvViewModel(
+                              game: widget.game1,
+                              minAge: minAge,
+                              maxAge: maxAge,
+                              minOverall: ovrMin,
+                              maxOverall: ovrMax,
+                              minPotential: potMin,
+                              maxPotential: potMax,
+                              minValue: minVal,
+                              maxValue: maxVal,
+                              name: name,
+                              position: pos,
+                            ),
+                            child: CsvExample(),
+                          ),
                         ),
-                        Icon(Icons.arrow_drop_down, color: Colors.white),
-                      ],
+                      );
+                    },
+                    backgroundColor: const Color.fromARGB(255, 33, 15, 150),
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.white,
                     ),
                   ),
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // Diğer filtreleme alanları
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.all(16),
-                  children: [
-                    SizedBox(height: 5),
-                    Column(
-                      children: [
-                        buildNameField("Name", name),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: buildFilterField(
-                                "Overall Min", overallMinController)),
-                        SizedBox(width: 9),
-                        Expanded(
-                            child: buildFilterField(
-                                "Overall Max", overallMaxController)),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    // Potential Min-Max
-                    Row(
-                      children: [
-                        Expanded(
-                            child: buildFilterField(
-                                "Potential Min", potentialMinController)),
-                        SizedBox(width: 9),
-                        Expanded(
-                            child: buildFilterField(
-                                "Potential Max", potentialMaxController)),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    // Age Min-Max
-                    Row(
-                      children: [
-                        Expanded(
-                            child:
-                                buildFilterField("Age Min", ageMinController)),
-                        SizedBox(width: 9),
-                        Expanded(
-                            child:
-                                buildFilterField("Age Max", ageMaxController)),
-                      ],
-                    ),
-
-                    SizedBox(
-                      height: 20,
-                    ),
-                    // Value Min-Max
-                    Row(
-                      children: [
-                        Expanded(
-                            child: buildFilterField(
-                                "Value Min", valueMinController)),
-                        SizedBox(width: 9),
-                        Expanded(
-                            child: buildFilterField(
-                                "Value Max", valueMaxController)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FloatingActionButton(
-                      heroTag: null,
-                      onPressed: () {
-                        final minAge =
-                            int.tryParse(ageMinController.text) ?? 16;
-                        final maxAge =
-                            int.tryParse(ageMaxController.text) ?? 50;
-                        final minVal =
-                            int.tryParse(valueMinController.text) ?? 0;
-                        final maxVal =
-                            int.tryParse(valueMaxController.text) ?? 1000000000;
-                        final ovrMax =
-                            int.tryParse(overallMaxController.text) ?? 99;
-                        final ovrMin =
-                            int.tryParse(overallMinController.text) ?? 40;
-                        final potMax =
-                            int.tryParse(potentialMaxController.text) ?? 99;
-                        final potMin =
-                            int.tryParse(potentialMinController.text) ?? 40;
-                        final pos = selectedPositions;
-                        ;
-                        print(potMax);
-
-                        Navigator.push(
+                  SizedBox(width: 10),
+                  FloatingActionButton(
+                    onPressed: () => {
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CsvExample([],
-                                  game: widget.game1,
-                                  minage: minAge,
-                                  maxage: maxAge,
-                                  maxoverall: ovrMax,
-                                  minoverall: ovrMin,
-                                  maxpotential: potMax,
-                                  minpotential: potMin,
-                                  maxvalue: maxVal,
-                                  minvalue: minVal,
-                                  name: name.text,
-                                  position: pos,
-                                  )),
-                        );
-                      },
-                      backgroundColor: const Color.fromARGB(255, 33, 15, 150),
-                      child: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
+                              builder: (context) => Favoritepage()))
+                    },
+                    child: Icon(
+                      Icons.favorite,
+                      color: Colors.white,
                     ),
-                    SizedBox(width: 10),
-                    FloatingActionButton(
-                      onPressed: () => {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Favoritepage()))
-
-                      },
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -306,17 +312,23 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildNameField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: UnderlineInputBorder(),
-        ),
-        keyboardType: TextInputType.name,
-      ),
+  Widget buildNameField(String label) {
+    return Consumer<SearchViewModel>(
+      builder: (context, searchViewModel, child) {
+        return TextField(
+          decoration: InputDecoration(
+            labelText: label,
+            border: UnderlineInputBorder(),
+          ),
+          keyboardType: TextInputType.name,
+          onChanged: (value) {
+            searchViewModel.updateName(value);
+          },
+          controller: TextEditingController(text: searchViewModel.name)
+            ..selection =
+                TextSelection.collapsed(offset: searchViewModel.name.length),
+        );
+      },
     );
   }
 }

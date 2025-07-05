@@ -7,10 +7,10 @@ class Favoriteservice {
   Future<void> addFavorite(Player item) async {
     final db = await Databasehelper.ins.database; // Veritabanını aç
     await db.insert(
-    'favorites', // Tablo adı
-    item.toMap(), // Player nesnesini Map'e çeviriyoruz
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );// Favoriyi ekle
+      'favorites', // Tablo adı
+      item.toMap(), // Player nesnesini Map'e çeviriyoruz
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    ); // Favoriyi ekle
   }
 
   // 📌 Favorileri listeleme
@@ -35,9 +35,14 @@ class Favoriteservice {
     */
   }
 
-  // 📌 Favori silme
-  Future<int> removeFavorite(String item) async {
+  Future<void> removeFavorite(Player item) async {
     final db = await Databasehelper.ins.database;
-    return await db.delete('favorites', where: 'item = ?', whereArgs: [item]);
+    await db.delete(
+      'favorites', // Tablo adı
+      where: 'name = ?', // Silinecek öğenin koşulu
+      whereArgs: [
+        item.name
+      ], // 'id' parametresi olarak Player'ın id'sini geçiyoruz
+    );
   }
 }

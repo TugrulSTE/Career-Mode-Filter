@@ -7,7 +7,7 @@ class Player {
   int potential;
   int age;
   String club;
-
+  int skills;
   Player({
     required this.name,
     required this.age,
@@ -15,6 +15,7 @@ class Player {
     required this.overall,
     required this.value,
     required this.club,
+    required this.skills,
     });
   Map<String, dynamic> toMap() {
     return {
@@ -24,6 +25,7 @@ class Player {
       'overall': overall,
       'value': value,
       'club': club,
+      'skills' : skills,
     };
   }
 
@@ -35,6 +37,7 @@ class Player {
       overall: map['overall'],
       value: map['value'],
       club: map['club'],
+      skills: map['skills'],
     );
   }
   

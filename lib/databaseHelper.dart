@@ -31,7 +31,8 @@ class Databasehelper {
             potential INTEGER,
             overall INTEGER,
             value REAL,
-            club TEXT
+            club TEXT,
+            skills INTEGER
       )
     ''');
   }
