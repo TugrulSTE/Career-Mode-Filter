@@ -28,6 +28,7 @@ Thanks for visiting 🚀
 1.1
 - SQflite is used to save favorite players 📁
 - Color theme changed to blue 🟦
+  
 1.2
 - You can view each playes's skill moves rating.
 - List of skill moves added as a page.
